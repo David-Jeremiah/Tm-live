@@ -1,0 +1,200 @@
+[
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 1,
+    "fields": {
+      "name": "TM Essential",
+      "tier": 1,
+      "price_min": 700000,
+      "price_max": 900000,
+      "tagline": "Entry-level full-service PA",
+      "ideal_for": "Small functions | birthdays | meetings | small church events",
+      "capacity": "~100–200 people depending on venue",
+      "equipment": "2 × 12\" single-source speakers\n1 × single 18\" sub\nX32 console\n2 × wireless microphones\n2 × stage monitors\nAmplification",
+      "services": "Sound engineer/operator\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 2,
+    "fields": {
+      "name": "TM Standard",
+      "tier": 2,
+      "price_min": 1000000,
+      "price_max": 1300000,
+      "tagline": "Entry-level full-service PA package",
+      "ideal_for": "Medium weddings | birthdays | church functions | corporate events",
+      "capacity": "~200–350 people",
+      "equipment": "4 × 12\" single-source speakers\n1 × single 18\" sub\nX32 console\n2 pairs wireless microphones\n2 × stage monitors\nAmplification",
+      "services": "Sound engineer\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 3,
+    "fields": {
+      "name": "TM Wedding Pro",
+      "tier": 3,
+      "price_min": 1500000,
+      "price_max": 1800000,
+      "tagline": "This is where TM starts presenting itself as a professional PA company",
+      "ideal_for": "Medium-to-large weddings | introductions | conferences | church events",
+      "capacity": "~400–600 people, depending heavily on venue and deployment",
+      "equipment": "4 × L12 line arrays\n2 × double-18\" subs\n2 × 12\" single-source speakers for fills/monitors\nX32 console\n4 × wireless microphones\n2 × stage monitors\nAmplifier rack",
+      "services": "Sound engineer\nComplete setup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 4,
+    "fields": {
+      "name": "TM Premium",
+      "tier": 4,
+      "price_min": 2000000,
+      "price_max": 2500000,
+      "tagline": "",
+      "ideal_for": "Large weddings | worship nights | corporate events | concerts",
+      "capacity": "~600–1,000+ people depending on venue",
+      "equipment": "6 × L12 line arrays\n2 × double-18\" subs\n2 × 12\" single-source speakers\nX32 console\n4 × wireless microphones\n4 × stage monitors\nFull amplifier rack",
+      "services": "Sound engineer\nSystem tuning\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 5,
+    "fields": {
+      "name": "TM Concert",
+      "tier": 5,
+      "price_min": 2800000,
+      "price_max": 3500000,
+      "tagline": "Serious concert/worship PA provider level",
+      "ideal_for": "Concerts | major worship events | large outdoor events | festivals",
+      "capacity": "Large outdoor events",
+      "equipment": "8 × L12 line arrays\n2 × double-18\" subs\n4 × 12\" single-source speakers\nX32 console\n4 × wireless microphones\n4 × stage monitors\nFull amplifier rack",
+      "services": "Professional system tuning\nSound engineer\nStage monitoring\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.soundpackage",
+    "pk": 6,
+    "fields": {
+      "name": "TM Full PA",
+      "tier": 6,
+      "price_min": 3500000,
+      "price_max": 4500000,
+      "tagline": "Maximum standard package using virtually the whole PA inventory",
+      "ideal_for": "Large concerts | major church events | large outdoor functions | high-end corporate productions",
+      "capacity": "Major productions",
+      "equipment": "MAIN PA: 10 × L12 line arrays\nLOW END: 2 × Double-18 subs\nFRONT/FILL/SIDE: 6 × 12\" single-source speakers\nMONITORING: Available 12\" speakers as stage monitors\nCONTROL: Behringer X32\nMICROPHONES: 4 × wireless microphones\nAMPLIFICATION: 3-amplifier rack",
+      "services": "Professional sound engineer\nSystem setup\nSystem tuning\nComplete cabling\nSoundcheck\nOperation throughout event\nBreakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 1,
+    "fields": {
+      "name": "TM Basic",
+      "tier": 1,
+      "price_min": 600000,
+      "price_max": 600000,
+      "tagline": "Don't go below 500K unless it's a strategic/very small job",
+      "ideal_for": "Birthdays | small functions | intimate events",
+      "equipment": "2 × 295W Moving Heads\n4 × RGBW PAR\n4 × UV PAR\n2 × COB\nAvolites control",
+      "services": "Setup & operation",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 2,
+    "fields": {
+      "name": "TM Celebration",
+      "tier": 2,
+      "price_min": 800000,
+      "price_max": 800000,
+      "tagline": "Entry-level serious package",
+      "ideal_for": "Birthdays | graduations | parties | smaller receptions",
+      "equipment": "4 × 295W Moving Heads\n5 × RGBW PAR\n6 × UV PAR\n2 × COB\nAvolites control",
+      "services": "Operator\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 3,
+    "fields": {
+      "name": "TM Wedding Signature",
+      "tier": 3,
+      "price_min": 1000000,
+      "price_max": 1000000,
+      "tagline": "Main wedding offer — the package to push hardest",
+      "ideal_for": "Weddings | introduction ceremonies",
+      "equipment": "4 × 380W Moving Heads\n5 × RGBW PAR\n8 × UV PAR\n2 × Blinders\n2 × COB\nAvolites",
+      "services": "Lighting operator\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 4,
+    "fields": {
+      "name": "TM Wedding Premium",
+      "tier": 4,
+      "price_min": 1400000,
+      "price_max": 1400000,
+      "tagline": "Should look substantially different from the 1M package",
+      "ideal_for": "Premium weddings | large receptions",
+      "equipment": "6 × 380W Moving Heads\n5 × RGBW PAR\n10 × UV PAR\n2 × Blinders\n3 × COB\nAvolites",
+      "services": "Professional programming\nOperator\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 5,
+    "fields": {
+      "name": "TM Show Pro",
+      "tier": 5,
+      "price_min": 1800000,
+      "price_max": 1800000,
+      "tagline": "",
+      "ideal_for": "Concerts | worship nights | large weddings | corporate events | stage shows",
+      "equipment": "8 × 380W Moving Heads\n4 × 295W Moving Heads\n10 × PARs\n2 × Blinders\n5 × COB\nAvolites",
+      "services": "Programmer/operator\nSetup & breakdown",
+      "notes": "",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalogue.lightingpackage",
+    "pk": 6,
+    "fields": {
+      "name": "TM Full Lighting Production",
+      "tier": 6,
+      "price_min": 2500000,
+      "price_max": 3000000,
+      "tagline": "39 lighting fixtures under one production",
+      "ideal_for": "Concerts | worship nights | large weddings | corporate events | stage shows",
+      "equipment": "MOVING HEADS (12 total): 8 × 380W + 4 × 295W\nPARs: 20 PARs (15 × UV 6-in-1 + 5 × RGBW)\nEFFECTS: 2 × Blinders + 5 × COB\nCONTROL: Avolites",
+      "services": "Professional programming\nDedicated operator\nSetup\nBreakdown",
+      "notes": "Equipment + transportation + setup + programming + operator + dismantling + risk + maintenance + expertise",
+      "is_active": true
+    }
+  }
+]

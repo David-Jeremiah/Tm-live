@@ -1,0 +1,227 @@
+{% extends 'catalogue/base.html' %}
+{% block title %}Packages — TM Live{% endblock %}
+
+{% block extra_head %}
+<style>
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 0;
+  }
+  .tab-btn {
+    padding: 12px 24px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    background: transparent;
+    color: var(--grey);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-btn:hover { color: var(--white); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .pkg-card {
+    background: var(--dark2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .pkg-card:hover {
+    border-color: rgba(245,197,24,0.35);
+    transform: translateY(-3px);
+  }
+  .pkg-header {
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .pkg-tier {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-bottom: 6px;
+  }
+  .pkg-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .pkg-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .pkg-body { padding: 16px 22px; flex: 1; }
+  .pkg-ideal {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .pkg-items {
+    list-style: none;
+  }
+  .pkg-items li {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    padding: 4px 0 4px 18px;
+    position: relative;
+  }
+  .pkg-items li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+  .pkg-footer {
+    padding: 16px 22px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    gap: 8px;
+  }
+  .pkg-footer a {
+    flex: 1;
+    text-align: center;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .pkg-btn-primary {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .pkg-btn-primary:hover { background: var(--gold-light); }
+  .pkg-btn-secondary {
+    background: rgba(255,255,255,0.06);
+    color: var(--white);
+  }
+  .pkg-btn-secondary:hover { background: rgba(255,255,255,0.1); }
+  .capacity-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.72rem;
+    color: var(--grey);
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+  .capacity-tag::before { content: '👥 '; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 32px;">
+  <h1 class="section-heading">Equipment <span class="accent">Catalogue</span></h1>
+  <p class="section-sub">Choose your sound and lighting packages — or use the <a href="{% url 'catalogue:budget_calculator' %}" style="color:var(--gold);">budget calculator</a> to find the best fit.</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('sound', this)">🎛️ Sound Packages ({{ sound_packages|length }})</button>
+  <button class="tab-btn" onclick="switchTab('lighting', this)">💡 Lighting Packages ({{ lighting_packages|length }})</button>
+</div>
+
+<!-- SOUND TAB -->
+<div id="tab-sound" class="tab-content active">
+  <div class="packages-grid">
+    {% for pkg in sound_packages %}
+    <div class="pkg-card">
+      <div class="pkg-header">
+        <div class="pkg-tier">Sound Package {{ pkg.tier }} of 6</div>
+        <div class="pkg-name">{{ pkg.name }}</div>
+        <div class="pkg-price">
+          UGX {{ pkg.price_min|floatformat:0 }}
+          {% if pkg.price_max != pkg.price_min %} – {{ pkg.price_max|floatformat:0 }}{% endif %}
+        </div>
+        {% if pkg.capacity %}<div class="capacity-tag">{{ pkg.capacity }}</div>{% endif %}
+      </div>
+      <div class="pkg-body">
+        <div class="pkg-ideal">{{ pkg.ideal_for }}</div>
+        <ul class="pkg-items">
+          {% for item in pkg.equipment_list %}
+          <li>{{ item }}</li>
+          {% endfor %}
+          {% for item in pkg.services_list %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="pkg-footer">
+        <a href="{% url 'catalogue:request_quote' %}?sound={{ pkg.pk }}" class="pkg-btn-primary">Book This</a>
+        <a href="{% url 'catalogue:package_detail' 'sound' pkg.pk %}" class="pkg-btn-secondary">Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- LIGHTING TAB -->
+<div id="tab-lighting" class="tab-content">
+  <div class="packages-grid">
+    {% for pkg in lighting_packages %}
+    <div class="pkg-card">
+      <div class="pkg-header">
+        <div class="pkg-tier" style="color:#c084fc;">Lighting Package {{ pkg.tier }} of 6</div>
+        <div class="pkg-name">{{ pkg.name }}</div>
+        <div class="pkg-price" style="color:#c084fc;">
+          UGX {{ pkg.price_min|floatformat:0 }}
+          {% if pkg.price_max != pkg.price_min %} – {{ pkg.price_max|floatformat:0 }}{% endif %}
+        </div>
+      </div>
+      <div class="pkg-body">
+        <div class="pkg-ideal">{{ pkg.ideal_for }}</div>
+        <ul class="pkg-items">
+          {% for item in pkg.equipment_list %}
+          <li style="color:rgba(255,255,255,0.75);">{{ item }}</li>
+          {% endfor %}
+          {% for item in pkg.services_list %}
+          <li style="color:rgba(255,255,255,0.75);">{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="pkg-footer">
+        <a href="{% url 'catalogue:request_quote' %}?lighting={{ pkg.pk }}" class="pkg-btn-primary" style="background:#c084fc; color:#1a0040;">Book This</a>
+        <a href="{% url 'catalogue:package_detail' 'lighting' pkg.pk %}" class="pkg-btn-secondary">Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div style="text-align:center; margin-top:48px; padding: 32px; background: var(--dark2); border-radius: 14px; border: 1px solid rgba(245,197,24,0.15);">
+  <h3 style="font-size:1.2rem; margin-bottom:8px;">Need Sound <span class="gold">+</span> Lighting?</h3>
+  <p style="color:var(--grey); font-size:0.9rem; margin-bottom:20px;">Use the budget calculator to find the best sound and lighting combination for your budget.</p>
+  <a href="{% url 'catalogue:budget_calculator' %}" class="btn btn-gold">Open Budget Calculator →</a>
+</div>
+
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}
