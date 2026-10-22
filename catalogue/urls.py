@@ -9,4 +9,5 @@ urlpatterns = [
     path('calculator/', views.budget_calculator, name='budget_calculator'),
     path('package/<str:package_type>/<int:pk>/', views.package_detail, name='package_detail'),
     path('quote/', views.request_quote, name='request_quote'),
+    path('corporate/', views.corporate, name='corporate'),
 ]

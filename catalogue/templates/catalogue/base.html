@@ -1,245 +1,149 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}TM Live — Sound & Lighting{% endblock %}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <title>{% block title %}TM Live — Sound & PA · Uganda{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --gold: #F5C518;
-      --gold-dark: #c9a000;
-      --gold-light: #ffe066;
-      --black: #0a0a0a;
-      --dark: #111111;
-      --dark2: #1a1a1a;
-      --dark3: #222222;
-      --grey: #888;
-      --white: #fff;
+      --gold: #F5C518; --gold2: #c9a010; --gold-light: #ffe066;
+      --black: #080808; --dark: #111; --dark2: #181818; --dark3: #1f1f1f;
+      --text: #f0f0f0; --muted: #888; --grey: #888;
       --radius: 12px;
     }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--black);
-      color: var(--white);
-      min-height: 100vh;
+    body::before {
+      content: '\271D';
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 320px; color: rgba(245,197,24,0.018);
+      pointer-events: none; z-index: 0; line-height: 1;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     /* NAV */
     nav {
-      background: rgba(10,10,10,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(245,197,24,0.2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      padding: 0 24px;
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(245,197,24,0.15);
     }
     .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; padding: 0 20px;
     }
     .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      color: var(--gold);
-      text-decoration: none;
-      letter-spacing: 1px;
+      font-family: 'Cinzel', serif; font-size: 1.2rem;
+      color: var(--gold); text-decoration: none; letter-spacing: 2px;
     }
-    .nav-logo span { color: var(--white); }
-    .nav-links {
-      display: flex;
-      gap: 8px;
-      list-style: none;
-    }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 4px; list-style: none; }
     .nav-links a {
-      color: rgba(255,255,255,0.75);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.2s;
+      color: rgba(255,255,255,0.7); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      padding: 7px 13px; border-radius: 8px; transition: all 0.2s;
     }
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--gold);
-      background: rgba(245,197,24,0.1);
-    }
+    .nav-links a:hover { color: var(--gold); background: rgba(245,197,24,0.08); }
     .nav-cta {
-      background: var(--gold) !important;
-      color: var(--black) !important;
+      background: var(--gold) !important; color: var(--black) !important;
       font-weight: 700 !important;
     }
     .nav-cta:hover { background: var(--gold-light) !important; }
-
-    /* MAIN */
-    main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+    .nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); margin: 4px 0; transition: all 0.3s; }
+    @media (max-width: 700px) {
+      .nav-hamburger { display: block; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(8,8,8,0.98); padding: 16px; gap: 4px; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 16px; border-radius: 8px; }
+    }
 
     /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
     .btn-gold {
-      background: var(--gold);
-      color: var(--black);
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 26px; border-radius: 10px;
+      background: var(--gold); color: var(--black);
+      font-weight: 700; font-size: 0.9rem; text-decoration: none;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
     }
     .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
     .btn-outline {
-      background: transparent;
-      color: var(--gold);
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 24px; border-radius: 10px;
+      background: transparent; color: var(--gold);
       border: 1.5px solid var(--gold);
+      font-weight: 600; font-size: 0.9rem; text-decoration: none;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
     }
     .btn-outline:hover { background: rgba(245,197,24,0.1); }
-    .btn-dark {
-      background: var(--dark3);
-      color: var(--white);
+
+    /* SECTION BASE */
+    .sec {
+      max-width: 900px; margin: 0 auto;
+      padding: 3.5rem 1.5rem;
     }
-    .btn-dark:hover { background: #2a2a2a; }
+    .sec-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .gold-rule {
+      width: 48px; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin-bottom: 16px;
+    }
+    .sec-title {
+      font-family: 'Cinzel', serif; font-size: clamp(1.4rem, 4vw, 2rem);
+      line-height: 1.3; margin-bottom: 16px;
+    }
+    .sec-body { font-size: 0.95rem; color: rgba(240,240,240,0.75); line-height: 1.8; margin-bottom: 24px; }
+    .mgold { color: var(--gold); font-weight: 600; }
+
+    /* PAGE CONTENT */
+    .page-content { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
 
     /* CARDS */
     .card {
       background: var(--dark2);
       border: 1px solid rgba(255,255,255,0.07);
-      border-radius: var(--radius);
-      padding: 28px;
+      border-radius: var(--radius); padding: 24px;
       transition: border-color 0.2s, transform 0.2s;
     }
-    .card:hover {
-      border-color: rgba(245,197,24,0.3);
-      transform: translateY(-2px);
-    }
+    .card:hover { border-color: rgba(245,197,24,0.3); transform: translateY(-2px); }
 
-    /* GOLD TEXT */
-    .gold { color: var(--gold); }
-
-    /* SECTION HEADING */
-    .section-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      color: var(--white);
-      margin-bottom: 8px;
-    }
-    .section-heading .accent { color: var(--gold); }
-    .section-sub {
-      color: var(--grey);
-      font-size: 0.95rem;
-      margin-bottom: 32px;
-    }
-
-    /* BADGES */
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .badge-sound { background: rgba(245,197,24,0.15); color: var(--gold); border: 1px solid rgba(245,197,24,0.3); }
-    .badge-lighting { background: rgba(180,130,255,0.15); color: #c084fc; border: 1px solid rgba(180,130,255,0.3); }
-
-    /* PRICE TAG */
-    .price-tag {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--gold);
-    }
-    .price-tag small {
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: var(--grey);
-      display: block;
-    }
-
-    /* INCLUDES LIST */
-    .includes-list {
-      list-style: none;
-      margin: 12px 0;
-    }
-    .includes-list li {
-      padding: 5px 0;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.8);
-      padding-left: 20px;
-      position: relative;
-    }
-    .includes-list li::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--gold);
-      font-weight: 700;
-    }
-
-    /* FORM */
-    .form-group { margin-bottom: 20px; }
-    .form-group label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 7px;
-      letter-spacing: 0.3px;
-    }
+    /* FORM INPUTS */
     .form-control {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--dark3);
-      border: 1.5px solid rgba(255,255,255,0.1);
-      border-radius: 9px;
-      color: var(--white);
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.9rem;
-      transition: border-color 0.2s;
-      outline: none;
+      width: 100%; padding: 11px 15px;
+      background: var(--dark3); border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 9px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.2s; outline: none;
     }
     .form-control:focus { border-color: var(--gold); }
     .form-control option { background: var(--dark2); }
-    textarea.form-control { resize: vertical; min-height: 100px; }
-
-    /* GRID */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    @media (max-width: 768px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      main { padding: 24px 16px 60px; }
-    }
-
-    /* DIVIDER */
-    .divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      margin: 40px 0;
+    textarea.form-control { resize: vertical; min-height: 90px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: rgba(255,255,255,0.6); margin-bottom: 6px; letter-spacing: 0.3px;
     }
 
     /* FOOTER */
     footer {
+      text-align: center; padding: 32px 20px;
       border-top: 1px solid rgba(255,255,255,0.07);
-      padding: 24px;
-      text-align: center;
-      color: var(--grey);
-      font-size: 0.8rem;
+      font-size: 0.82rem; color: var(--muted);
     }
+    footer .cross { font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 10px; }
+    footer span { color: var(--gold); }
     footer a { color: var(--gold); text-decoration: none; }
   </style>
   {% block extra_head %}{% endblock %}
@@ -247,24 +151,37 @@
 <body>
   <nav>
     <div class="nav-inner">
-      <a href="{% url 'catalogue:home' %}" class="nav-logo">TM <span>Live</span></a>
+      <a href="{% url 'catalogue:home' %}" class="nav-logo">{{ s.site_name|default:"TM Live" }}</a>
+      <button class="nav-hamburger" onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
       <ul class="nav-links">
-        <li><a href="{% url 'catalogue:catalogue' %}">Catalogue</a></li>
-        <li><a href="{% url 'catalogue:budget_calculator' %}">Budget Calculator</a></li>
+        <li><a href="{% url 'catalogue:home' %}#about">About</a></li>
+        <li><a href="{% url 'catalogue:home' %}#services">Services</a></li>
+        <li><a href="{% url 'catalogue:home' %}#gallery">Gallery</a></li>
+        <li><a href="{% url 'catalogue:catalogue' %}">Packages</a></li>
+        <li><a href="{% url 'catalogue:corporate' %}">Corporate</a></li>
+        <li><a href="{% url 'catalogue:budget_calculator' %}">Calculator</a></li>
+        <li><a href="{% url 'catalogue:home' %}#contact">Contact</a></li>
         <li><a href="{% url 'catalogue:request_quote' %}" class="nav-cta">Get Quote</a></li>
       </ul>
     </div>
   </nav>
 
-  <main>
+  {% block full_page %}
+  <div class="page-content">
     {% block content %}{% endblock %}
-  </main>
+  </div>
+  {% endblock %}
 
   <footer>
-    <p>© 2025 TM Live — Professional Sound &amp; Lighting | Uganda</p>
-    <p style="margin-top:6px;">
-      <a href="https://wa.me/256777523280">📞 WhatsApp</a> &nbsp;|&nbsp;
-      <a href="https://tmliveug.netlify.app/">🌐 Website</a>
+    <span class="cross">&#x271D;&#xFE0E;</span>
+    <p>{{ s.footer_note|default:"© 2025 TM Live · Live Sound & PA · Uganda" }}</p>
+    <p style="margin-top:6px; font-style:italic;">"{{ s.tagline|default:"Your Event. Our Sound. Perfection Guaranteed." }}" 🎵</p>
+    <p style="margin-top:10px;">
+      <a href="https://wa.me/{{ s.wa1_digits }}">💬 WhatsApp</a> &nbsp;|&nbsp;
+      <a href="mailto:{{ s.email }}">✉️ Email</a> &nbsp;|&nbsp;
+      <a href="{% url 'catalogue:catalogue' %}">📦 Packages</a>
     </p>
   </footer>
 </body>
