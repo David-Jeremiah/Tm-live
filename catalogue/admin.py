@@ -6,11 +6,12 @@ from .models import (
     SoundPackage, LightingPackage,
     Quote, GalleryImage, CorporatePackage,
 )
+from .admin_site import tm_admin_site
 
 
 # ─── Site Settings ─────────────────────────────────────────────────────────────
 
-@admin.register(SiteSettings)
+
 class SiteSettingsAdmin(admin.ModelAdmin):
     """Singleton admin — only one row ever exists."""
 
@@ -68,12 +69,14 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         # Skip the list, go straight to edit the single row
         obj, _ = SiteSettings.objects.get_or_create(pk=1)
         from django.shortcuts import redirect
-        return redirect(f'../1/change/')
+        from django.urls import reverse
+        url = reverse('admin:catalogue_sitesettings_change', args=[1])
+        return redirect(url)
 
 
 # ─── Service Cards ─────────────────────────────────────────────────────────────
 
-@admin.register(ServiceCard)
+
 class ServiceCardAdmin(admin.ModelAdmin):
     list_display  = ['icon', 'name', 'highlight', 'order', 'is_active']
     list_editable = ['order', 'is_active']
@@ -83,7 +86,7 @@ class ServiceCardAdmin(admin.ModelAdmin):
 
 # ─── Sound Packages ────────────────────────────────────────────────────────────
 
-@admin.register(SoundPackage)
+
 class SoundPackageAdmin(admin.ModelAdmin):
     list_display  = ['name', 'tier', 'price_display', 'ideal_for', 'is_active']
     list_filter   = ['is_active', 'tier']
@@ -107,7 +110,7 @@ class SoundPackageAdmin(admin.ModelAdmin):
 
 # ─── Lighting Packages ─────────────────────────────────────────────────────────
 
-@admin.register(LightingPackage)
+
 class LightingPackageAdmin(admin.ModelAdmin):
     list_display  = ['name', 'tier', 'price_display', 'ideal_for', 'is_active']
     list_filter   = ['is_active', 'tier']
@@ -131,7 +134,7 @@ class LightingPackageAdmin(admin.ModelAdmin):
 
 # ─── Corporate Packages ────────────────────────────────────────────────────────
 
-@admin.register(CorporatePackage)
+
 class CorporatePackageAdmin(admin.ModelAdmin):
     list_display  = ['name', 'price_display', 'ideal_for', 'order', 'is_active']
     list_filter   = ['is_active']
@@ -156,7 +159,7 @@ class CorporatePackageAdmin(admin.ModelAdmin):
 
 # ─── Gallery Images ────────────────────────────────────────────────────────────
 
-@admin.register(GalleryImage)
+
 class GalleryImageAdmin(admin.ModelAdmin):
     list_display  = ['thumb', 'category', 'caption', 'order', 'is_active']
     list_filter   = ['category', 'is_active']
@@ -177,7 +180,7 @@ class GalleryImageAdmin(admin.ModelAdmin):
 
 # ─── Quotes ────────────────────────────────────────────────────────────────────
 
-@admin.register(Quote)
+
 class QuoteAdmin(admin.ModelAdmin):
     list_display    = ['client_name', 'client_phone', 'event_type', 'event_date',
                        'sound_package', 'lighting_package', 'total_display', 'status', 'created_at']
@@ -226,3 +229,13 @@ class QuoteAdmin(admin.ModelAdmin):
         url = f"https://wa.me/{s.wa1_digits()}?text={msg}"
         return format_html('<a href="{}" target="_blank" style="color:#25D366">💬 Send on WhatsApp</a>', url)
     wa_link.short_description = 'WhatsApp'
+
+
+# ─── Register all models with our custom admin site ────────────────────────────
+tm_admin_site.register(SiteSettings,     SiteSettingsAdmin)
+tm_admin_site.register(ServiceCard,      ServiceCardAdmin)
+tm_admin_site.register(SoundPackage,     SoundPackageAdmin)
+tm_admin_site.register(LightingPackage,  LightingPackageAdmin)
+tm_admin_site.register(CorporatePackage, CorporatePackageAdmin)
+tm_admin_site.register(GalleryImage,     GalleryImageAdmin)
+tm_admin_site.register(Quote,            QuoteAdmin)

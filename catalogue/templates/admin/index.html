@@ -1,0 +1,186 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
+  padding: 20px; text-align: center;
+}
+.stat-card .num { font-size: 2.4rem; font-weight: 800; color: #F5C518; line-height: 1; margin-bottom: 4px; }
+.stat-card .lbl { font-size: .75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.stat-card .sub { font-size: .8rem; color: #aaa; margin-top: 4px; }
+
+.section-head {
+  font-size: .68rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: #F5C518; margin: 28px 0 12px; padding-bottom: 8px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.quotes-table { width: 100%; border-collapse: collapse; }
+.quotes-table th {
+  font-size: .68rem; letter-spacing: 1px; text-transform: uppercase;
+  color: #888; padding: 8px 12px; text-align: left;
+  border-bottom: 1px solid #2a2a2a;
+}
+.quotes-table td { padding: 10px 12px; border-bottom: 1px solid #1e1e1e; font-size: .85rem; vertical-align: middle; }
+.quotes-table tr:last-child td { border-bottom: none; }
+.quotes-table tr:hover td { background: rgba(245,197,24,.03); }
+
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: .68rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+}
+.badge-draft    { background: rgba(255,255,255,.08); color: #aaa; }
+.badge-sent     { background: rgba(59,130,246,.15); color: #93c5fd; }
+.badge-accepted { background: rgba(34,197,94,.15);  color: #86efac; }
+.badge-declined { background: rgba(239,68,68,.15);  color: #fca5a5; }
+
+.quick-links { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.ql {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; border-radius: 8px;
+  background: #1a1a1a; border: 1px solid #2a2a2a;
+  color: #e0e0e0; text-decoration: none; font-size: .82rem;
+  transition: border-color .2s, background .2s;
+}
+.ql:hover { border-color: #F5C518; background: rgba(245,197,24,.06); color: #F5C518; }
+
+.revenue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.rev-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px; }
+.rev-card h4 { font-size: .72rem; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+.rev-card ul { list-style: none; padding: 0; margin: 0; }
+.rev-card ul li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #232323; font-size: .82rem; color: #ccc; }
+.rev-card ul li:last-child { border-bottom: none; }
+.rev-card ul li span { color: #F5C518; font-weight: 700; }
+
+@media (max-width: 600px) { .revenue-grid { grid-template-columns: 1fr; } }
+</style>
+
+<h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: #fff;">
+  📊 TM Live — Admin Dashboard
+</h1>
+<p style="color: #888; font-size: .85rem; margin-bottom: 24px;">Welcome back. Here's what's happening.</p>
+
+<!-- Quick links -->
+<div class="quick-links">
+  <a href="{% url 'admin:catalogue_quote_changelist' %}" class="ql">📋 All Quotes</a>
+  <a href="{% url 'admin:catalogue_galleryimage_changelist' %}" class="ql">🖼️ Gallery Images</a>
+  <a href="{% url 'admin:catalogue_sitesettings_changelist' %}" class="ql">⚙️ Site Settings</a>
+  <a href="{% url 'admin:catalogue_servicecard_changelist' %}" class="ql">🎤 Service Cards</a>
+  <a href="{% url 'admin:catalogue_soundpackage_changelist' %}" class="ql">🎛️ Sound Packages</a>
+  <a href="{% url 'admin:catalogue_lightingpackage_changelist' %}" class="ql">💡 Lighting Packages</a>
+  <a href="{% url 'admin:catalogue_corporatepackage_changelist' %}" class="ql">🏢 Corporate Packages</a>
+  <a href="/" target="_blank" class="ql">🌐 View Live Site</a>
+</div>
+
+<!-- Stats -->
+<div class="dash-grid">
+  <div class="stat-card">
+    <div class="num">{{ total_quotes }}</div>
+    <div class="lbl">Total Quotes</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" style="color: #86efac;">{{ accepted_quotes }}</div>
+    <div class="lbl">Accepted</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" style="color: #93c5fd;">{{ pending_quotes }}</div>
+    <div class="lbl">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ gallery_count }}</div>
+    <div class="lbl">Gallery Images</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ sound_count }}</div>
+    <div class="lbl">Sound Packages</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ lighting_count }}</div>
+    <div class="lbl">Lighting Packages</div>
+  </div>
+</div>
+
+<!-- Revenue summary -->
+<div class="revenue-grid">
+  <div class="rev-card">
+    <h4>💰 Revenue Summary</h4>
+    <ul>
+      <li>Accepted quotes total <span>UGX {{ accepted_total|floatformat:0 }}</span></li>
+      <li>Pending quotes value <span>UGX {{ pending_total|floatformat:0 }}</span></li>
+      <li>This month <span>UGX {{ month_total|floatformat:0 }}</span></li>
+    </ul>
+  </div>
+  <div class="rev-card">
+    <h4>📆 Recent Activity</h4>
+    <ul>
+      <li>Quotes today <span>{{ today_quotes }}</span></li>
+      <li>Quotes this week <span>{{ week_quotes }}</span></li>
+      <li>Quotes this month <span>{{ month_quotes }}</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Recent quotes -->
+<div class="section-head">Recent Quote Requests</div>
+{% if recent_quotes %}
+<div style="background: #111; border: 1px solid #222; border-radius: 10px; overflow: hidden;">
+  <table class="quotes-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Client</th>
+        <th>Phone</th>
+        <th>Event</th>
+        <th>Date</th>
+        <th>Packages</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in recent_quotes %}
+      <tr>
+        <td style="color: #555;">#{{ q.pk }}</td>
+        <td style="font-weight: 600; color: #fff;">{{ q.client_name }}</td>
+        <td><a href="https://wa.me/{{ q.client_phone|cut:'+' }}" style="color: #25D366; text-decoration: none;">{{ q.client_phone }}</a></td>
+        <td>{{ q.event_type }}</td>
+        <td style="color: #888; font-size: .78rem; white-space: nowrap;">{{ q.created_at|date:"d M Y" }}</td>
+        <td style="font-size: .78rem; color: #aaa;">
+          {% if q.sound_package %}🎛️ {{ q.sound_package.name }}<br>{% endif %}
+          {% if q.lighting_package %}💡 {{ q.lighting_package.name }}{% endif %}
+          {% if not q.sound_package and not q.lighting_package %}—{% endif %}
+        </td>
+        <td style="color: #F5C518; font-weight: 700; white-space: nowrap;">
+          {% if q.total_price %}UGX {{ q.total_price|floatformat:0 }}{% else %}—{% endif %}
+        </td>
+        <td>
+          <span class="badge badge-{{ q.status }}">{{ q.get_status_display }}</span>
+        </td>
+        <td>
+          <a href="{% url 'admin:catalogue_quote_change' q.pk %}" style="color: #F5C518; font-size: .78rem; text-decoration: none; white-space: nowrap;">Edit →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div style="margin-top: 10px; text-align: right;">
+  <a href="{% url 'admin:catalogue_quote_changelist' %}" style="color: #F5C518; font-size: .82rem;">View all {{ total_quotes }} quotes →</a>
+</div>
+{% else %}
+<p style="color: #555; padding: 24px 0;">No quote requests yet. They'll appear here when clients submit them.</p>
+{% endif %}
+
+<!-- Model admin links from base -->
+{% if app_list %}
+<div class="section-head" style="margin-top: 32px;">All Admin Sections</div>
+{% for app in app_list %}
+  {% for model in app.models %}
+  {% endfor %}
+{% endfor %}
+{% endif %}
+{% endblock %}

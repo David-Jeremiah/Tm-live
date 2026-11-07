@@ -117,10 +117,20 @@ def package_detail(request, package_type, pk):
     if package_type == 'sound':
         package  = get_object_or_404(SoundPackage,   pk=pk, is_active=True)
         template = 'catalogue/sound_detail.html'
+        match_packages = LightingPackage.objects.filter(is_active=True).order_by('tier')
+        match_type = 'lighting'
     else:
         package  = get_object_or_404(LightingPackage, pk=pk, is_active=True)
         template = 'catalogue/lighting_detail.html'
-    return render(request, template, {'package': package, 'package_type': package_type, 's': s})
+        match_packages = SoundPackage.objects.filter(is_active=True).order_by('tier')
+        match_type = 'sound'
+    return render(request, template, {
+        'package': package,
+        'package_type': package_type,
+        'match_packages': match_packages,
+        'match_type': match_type,
+        's': s,
+    })
 
 
 def request_quote(request):
@@ -205,3 +215,45 @@ def corporate(request):
     s = SiteSettings.get()
     packages = CorporatePackage.objects.filter(is_active=True)
     return render(request, 'catalogue/corporate.html', {'packages': packages, 's': s})
+
+
+def about(request):
+    s = SiteSettings.get()
+    return render(request, 'catalogue/about.html', {'s': s})
+
+
+def services(request):
+    s = SiteSettings.get()
+    service_list = ServiceCard.objects.filter(is_active=True)
+    gallery_images = GalleryImage.objects.filter(is_active=True)[:12]
+    return render(request, 'catalogue/services.html', {
+        's': s,
+        'service_list': service_list,
+        'gallery_images': gallery_images,
+    })
+
+
+def contact(request):
+    s = SiteSettings.get()
+    success = False
+
+    if request.method == 'POST':
+        # Save as a quote with just contact info
+        name  = request.POST.get('name', '')
+        phone = request.POST.get('phone', '')
+        email = request.POST.get('email', '')
+        msg   = request.POST.get('message', '')
+
+        Quote.objects.create(
+            client_name=name,
+            client_phone=phone,
+            client_email=email,
+            event_type='General Enquiry',
+            notes=msg,
+        )
+        import urllib.parse
+        wa_msg = urllib.parse.quote(f"*New Enquiry from TM Live Website*\nName: {name}\nPhone: {phone}\nMessage: {msg}")
+        wa_url = f"https://wa.me/{s.wa1_digits()}?text={wa_msg}"
+        return render(request, 'catalogue/contact.html', {'s': s, 'success': True, 'wa_url': wa_url})
+
+    return render(request, 'catalogue/contact.html', {'s': s, 'success': success})
