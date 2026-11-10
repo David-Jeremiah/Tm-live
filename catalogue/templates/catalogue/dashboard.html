@@ -1,0 +1,527 @@
+{% extends 'catalogue/base.html' %}
+{% load humanize %}
+{% block title %}Admin Dashboard — {{ s.site_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+/* ── Header ── */
+.dash-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 32px 0 24px; border-bottom: 1px solid rgba(255,255,255,.07);
+  margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+}
+.dash-header h1 { font-family:'Cinzel',serif; font-size:1.6rem; }
+.dash-header .sub { font-size:.82rem; color:#888; margin-top:4px; }
+.dash-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* ── Stat cards ── */
+.stat-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:32px; }
+.stat-card {
+  background:var(--dark2); border:1px solid rgba(255,255,255,.07);
+  border-radius:12px; padding:18px 16px;
+}
+.stat-card .sc-label { font-size:.68rem; letter-spacing:2px; text-transform:uppercase; color:#666; margin-bottom:8px; }
+.stat-card .sc-val { font-size:1.6rem; font-weight:800; line-height:1; }
+.stat-card .sc-sub { font-size:.72rem; color:#666; margin-top:5px; }
+.sc-gold  { color:var(--gold); }
+.sc-green { color:#4ade80; }
+.sc-blue  { color:#60a5fa; }
+.sc-purple{ color:#c084fc; }
+
+/* ── Section title ── */
+.sec-title {
+  font-family:'Cinzel',serif; font-size:1rem; color:#fff;
+  margin-bottom:16px; padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex; align-items:center; gap:8px;
+}
+
+/* ── Costing calculator ── */
+.calc-grid {
+  display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start;
+}
+.calc-panel {
+  background:var(--dark2); border:1px solid rgba(255,255,255,.07);
+  border-radius:14px; padding:24px;
+}
+.calc-event-fields {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;
+}
+.calc-event-fields input, .calc-event-fields select {
+  background:var(--dark3); border:1px solid rgba(255,255,255,.1);
+  border-radius:8px; padding:10px 12px; color:#fff; font-size:.85rem; width:100%;
+}
+.calc-event-fields input::placeholder { color:#555; }
+
+.equip-table { width:100%; border-collapse:collapse; }
+.equip-table th {
+  font-size:.65rem; letter-spacing:2px; text-transform:uppercase;
+  color:#666; padding:0 8px 10px; text-align:left; font-weight:600;
+}
+.equip-table th:last-child, .equip-table td:last-child { text-align:right; }
+.equip-table td {
+  padding:7px 8px; font-size:.83rem; border-bottom:1px solid rgba(255,255,255,.04);
+  color:rgba(255,255,255,.8);
+}
+.equip-table tr:last-child td { border-bottom:none; }
+.equip-table td input[type=number] {
+  width:60px; background:var(--dark3); border:1px solid rgba(255,255,255,.1);
+  border-radius:6px; padding:5px 8px; color:#fff; font-size:.82rem; text-align:center;
+}
+.equip-table td input[type=number]:focus { border-color:var(--gold); outline:none; }
+.eq-cat { font-size:.6rem; letter-spacing:1px; text-transform:uppercase;
+  color:#555; padding:14px 8px 4px; }
+
+/* Results panel */
+.result-panel {
+  background:var(--dark2); border:1px solid rgba(245,197,24,.2);
+  border-radius:14px; padding:24px; position:sticky; top:80px;
+}
+.result-panel .rp-title { font-family:'Cinzel',serif; font-size:.9rem; color:var(--gold); margin-bottom:18px; }
+.rp-row { display:flex; justify-content:space-between; align-items:center;
+  padding:7px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:.82rem; }
+.rp-row:last-of-type { border-bottom:none; }
+.rp-row .rp-lbl { color:#888; }
+.rp-row .rp-val { font-weight:600; color:#fff; }
+.rp-total {
+  margin-top:16px; background:rgba(245,197,24,.08); border:1px solid rgba(245,197,24,.2);
+  border-radius:10px; padding:14px; text-align:center;
+}
+.rp-total .rpt-lbl { font-size:.68rem; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+.rp-total .rpt-val { font-size:1.6rem; font-weight:800; color:var(--gold); }
+
+.profit-slider-wrap { margin:14px 0 10px; }
+.profit-slider-wrap label { font-size:.72rem; color:#888; display:flex; justify-content:space-between; margin-bottom:6px; }
+input[type=range] { width:100%; accent-color:var(--gold); }
+
+.contingency-wrap { display:flex; align-items:center; gap:8px; margin:10px 0; font-size:.8rem; color:#888; }
+.contingency-wrap input { width:60px; background:var(--dark3); border:1px solid rgba(255,255,255,.1);
+  border-radius:6px; padding:4px 8px; color:#fff; font-size:.8rem; text-align:center; }
+
+.btn-generate {
+  display:block; width:100%; padding:12px; border-radius:9px;
+  background:var(--gold); color:#0a0a0a; font-weight:700; font-size:.88rem;
+  border:none; cursor:pointer; margin-top:16px; text-align:center; text-decoration:none;
+}
+.btn-generate:hover { background:#e6b800; }
+
+/* ── Quotation preview ── */
+.quote-preview {
+  background:var(--dark2); border:1px solid rgba(255,255,255,.07);
+  border-radius:14px; padding:28px; margin-top:28px; display:none;
+}
+.quote-preview.visible { display:block; }
+.qp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.qp-logo { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--gold); }
+.qp-ref { font-size:.75rem; color:#888; text-align:right; }
+.qp-client-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+.qp-client-grid .qcf label { font-size:.65rem; letter-spacing:1px; text-transform:uppercase; color:#666; margin-bottom:4px; display:block; }
+.qp-client-grid .qcf input {
+  width:100%; background:var(--dark3); border:1px solid rgba(255,255,255,.08);
+  border-radius:7px; padding:8px 10px; color:#fff; font-size:.82rem;
+}
+.qp-items-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+.qp-items-table th {
+  font-size:.65rem; letter-spacing:1px; text-transform:uppercase;
+  color:#666; padding:6px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.08);
+}
+.qp-items-table td { padding:8px 10px; font-size:.82rem; color:rgba(255,255,255,.8);
+  border-bottom:1px solid rgba(255,255,255,.04); }
+.qp-items-table td:last-child { text-align:right; }
+.qp-totals { margin-left:auto; width:260px; }
+.qp-totals .qt-row { display:flex; justify-content:space-between; padding:5px 0;
+  font-size:.82rem; border-bottom:1px solid rgba(255,255,255,.05); }
+.qp-totals .qt-total { font-weight:800; color:var(--gold); font-size:1rem; }
+.qp-footer { margin-top:20px; font-size:.75rem; color:#666; line-height:1.7; }
+.btn-print { margin-top:14px; padding:10px 20px; border-radius:8px;
+  background:transparent; border:1px solid rgba(245,197,24,.4); color:var(--gold);
+  cursor:pointer; font-size:.82rem; }
+.btn-print:hover { background:rgba(245,197,24,.08); }
+
+/* ── Recent quotes table ── */
+.quotes-table { width:100%; border-collapse:collapse; }
+.quotes-table th {
+  font-size:.65rem; letter-spacing:2px; text-transform:uppercase;
+  color:#666; padding:8px 12px; text-align:left; font-weight:600;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.quotes-table td { padding:10px 12px; font-size:.83rem;
+  border-bottom:1px solid rgba(255,255,255,.04); color:rgba(255,255,255,.8); }
+.quotes-table tr:hover td { background:rgba(255,255,255,.02); }
+.status-badge {
+  display:inline-block; padding:2px 10px; border-radius:20px;
+  font-size:.65rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+}
+.s-draft    { background:rgba(255,255,255,.08); color:#aaa; }
+.s-sent     { background:rgba(96,165,250,.12); color:#60a5fa; }
+.s-accepted { background:rgba(74,222,128,.12); color:#4ade80; }
+.s-declined { background:rgba(248,113,113,.12); color:#f87171; }
+
+@media(max-width:768px){
+  .calc-grid { grid-template-columns:1fr; }
+  .calc-event-fields { grid-template-columns:1fr; }
+  .qp-client-grid { grid-template-columns:1fr; }
+  .stat-row { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+
+  <div class="dash-header">
+    <div>
+      <h1>📊 TM Live Dashboard</h1>
+      <div class="sub">Welcome back · {{ s.site_name }}</div>
+    </div>
+    <div class="dash-actions">
+      <a href="/admin/" class="btn-outline" style="font-size:.8rem;padding:8px 16px;">⚙️ Site Admin</a>
+      <a href="{% url 'catalogue:request_quote' %}" class="btn-gold" style="font-size:.8rem;padding:8px 16px;">+ New Quote</a>
+    </div>
+  </div>
+
+  <!-- ── Stats ── -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="sc-label">Total Quotes</div>
+      <div class="sc-val sc-gold">{{ total_quotes }}</div>
+      <div class="sc-sub">All time</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Accepted</div>
+      <div class="sc-val sc-green">{{ accepted_quotes }}</div>
+      <div class="sc-sub">Confirmed bookings</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Pending</div>
+      <div class="sc-val sc-blue">{{ pending_quotes }}</div>
+      <div class="sc-sub">Awaiting reply</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">This Month</div>
+      <div class="sc-val sc-gold">{{ month_quotes }}</div>
+      <div class="sc-sub">New enquiries</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Revenue</div>
+      <div class="sc-val sc-green" style="font-size:1.1rem;">{{ total_revenue|intcomma }}</div>
+      <div class="sc-sub">UGX accepted</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Packages</div>
+      <div class="sc-val sc-purple">{{ sound_count }}S / {{ lighting_count }}L</div>
+      <div class="sc-sub">Sound / Lighting</div>
+    </div>
+  </div>
+
+  <!-- ── Costing Calculator ── -->
+  <div class="sec-title">💰 Event Costing Calculator</div>
+  <div class="calc-grid">
+    <div class="calc-panel">
+      <div class="calc-event-fields">
+        <input type="text" id="clientName" placeholder="Client / Organisation">
+        <input type="text" id="eventTitle" placeholder="Event title">
+        <input type="date" id="eventDate">
+        <input type="text" id="eventVenue" placeholder="Venue / Location">
+        <input type="number" id="eventDays" value="1" min="1" placeholder="Days">
+        <select id="deliveryDiscount">
+          <option value="1">Day 1 (full rate)</option>
+          <option value="0.75">Day 2 (75% rate)</option>
+          <option value="0.65">Day 3+ (65% rate)</option>
+        </select>
+      </div>
+
+      <table class="equip-table">
+        <thead>
+          <tr>
+            <th>Equipment</th>
+            <th style="text-align:center">Qty</th>
+            <th style="text-align:right">Rate/day (UGX)</th>
+            <th style="text-align:right">Line total</th>
+          </tr>
+        </thead>
+        <tbody id="equipRows">
+          <!-- Sound -->
+          <tr><td colspan="4" class="eq-cat">🔊 SOUND</td></tr>
+          <tr data-rate="100000"><td>L12 line-array cabinet</td><td style="text-align:center"><input type="number" value="0" min="0" max="10" class="qty-input"></td><td style="text-align:right">100,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="65000"><td>12-inch speaker</td><td style="text-align:center"><input type="number" value="0" min="0" max="6" class="qty-input"></td><td style="text-align:right">65,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="190000"><td>Double-18-inch subwoofer</td><td style="text-align:center"><input type="number" value="0" min="0" max="2" class="qty-input"></td><td style="text-align:right">190,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="120000"><td>Single-18-inch subwoofer</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">120,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="180000"><td>Behringer X32 console</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">180,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="230000"><td>Amplifier rack</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">230,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="40000"><td>Wireless microphone</td><td style="text-align:center"><input type="number" value="0" min="0" max="4" class="qty-input"></td><td style="text-align:right">40,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <!-- Lighting -->
+          <tr><td colspan="4" class="eq-cat">💡 LIGHTING</td></tr>
+          <tr data-rate="130000"><td>380W moving head</td><td style="text-align:center"><input type="number" value="0" min="0" max="8" class="qty-input"></td><td style="text-align:right">130,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="100000"><td>295W moving head</td><td style="text-align:center"><input type="number" value="0" min="0" max="4" class="qty-input"></td><td style="text-align:right">100,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="25000"><td>UV 6-in-1 PAR</td><td style="text-align:center"><input type="number" value="0" min="0" max="15" class="qty-input"></td><td style="text-align:right">25,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="30000"><td>RGBW PAR can</td><td style="text-align:center"><input type="number" value="0" min="0" max="5" class="qty-input"></td><td style="text-align:right">30,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="45000"><td>Blinder light</td><td style="text-align:center"><input type="number" value="0" min="0" max="2" class="qty-input"></td><td style="text-align:right">45,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="45000"><td>COB light</td><td style="text-align:center"><input type="number" value="0" min="0" max="5" class="qty-input"></td><td style="text-align:right">45,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="130000"><td>Avolites controller</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">130,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <!-- Power -->
+          <tr><td colspan="4" class="eq-cat">⚡ POWER</td></tr>
+          <tr data-rate="350000"><td>Generator (15–20 KVA)</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">350,000</td><td style="text-align:right" class="line-total">0</td></tr>
+          <tr data-rate="200000"><td>Power Distribution Unit</td><td style="text-align:center"><input type="number" value="0" min="0" max="1" class="qty-input"></td><td style="text-align:right">200,000</td><td style="text-align:right" class="line-total">0</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,.07);">
+        <div class="sec-title" style="font-size:.8rem;">Direct Delivery Costs</div>
+        <table class="equip-table">
+          <tbody>
+            <tr><td>Sound engineer</td><td><input type="number" id="costEngineer" value="150000" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Lighting operator</td><td><input type="number" id="costLighting" value="0" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Extra technicians / loaders</td><td><input type="number" id="costTech" value="100000" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Transport / fuel</td><td><input type="number" id="costTransport" value="180000" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Setup consumables</td><td><input type="number" id="costConsumables" value="50000" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Subcontracted equipment</td><td><input type="number" id="costSub" value="0" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+            <tr><td>Other</td><td><input type="number" id="costOther" value="0" class="cost-input" style="width:110px;text-align:right;"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Results panel -->
+    <div>
+      <div class="result-panel">
+        <div class="rp-title">📋 Quote Summary</div>
+        <div class="rp-row"><span class="rp-lbl">Equipment hire</span><span class="rp-val" id="r-equip">UGX 0</span></div>
+        <div class="rp-row"><span class="rp-lbl">Delivery costs</span><span class="rp-val" id="r-delivery">UGX 0</span></div>
+        <div class="rp-row"><span class="rp-lbl">Contingency</span><span class="rp-val" id="r-contingency">UGX 0</span></div>
+        <div class="rp-row"><span class="rp-lbl">Cost to deliver</span><span class="rp-val" id="r-cost">UGX 0</span></div>
+
+        <div class="profit-slider-wrap">
+          <label>
+            <span>Target margin</span>
+            <span id="marginLabel">50%</span>
+          </label>
+          <input type="range" id="marginSlider" min="10" max="70" value="50" step="5">
+        </div>
+
+        <div class="contingency-wrap">
+          Contingency:
+          <input type="number" id="contingencyPct" value="5" min="0" max="20"> %
+        </div>
+
+        <div class="rp-total">
+          <div class="rpt-lbl">Suggested Selling Price</div>
+          <div class="rpt-val" id="r-price">UGX 0</div>
+          <div style="font-size:.7rem;color:#888;margin-top:4px;" id="r-rounded"></div>
+        </div>
+
+        <button class="btn-generate" onclick="generateQuote()">📄 Generate Quotation</button>
+        <a href="/admin/catalogue/quote/add/" class="btn-generate" style="background:transparent;border:1px solid rgba(245,197,24,.3);color:var(--gold);margin-top:8px;">+ Save to Admin</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quotation Preview ── -->
+  <div class="quote-preview" id="quotePreview">
+    <div class="qp-header">
+      <div>
+        <div class="qp-logo">🎵 {{ s.site_name|upper }}</div>
+        <div style="font-size:.75rem;color:#888;margin-top:3px;">{{ s.location }} · {{ s.phone_wa1 }}</div>
+      </div>
+      <div class="qp-ref">
+        <div style="font-size:.7rem;color:#666;">QUOTATION</div>
+        <div id="qp-refno" style="font-size:.85rem;color:#fff;"></div>
+        <div id="qp-date" style="font-size:.72rem;color:#888;"></div>
+      </div>
+    </div>
+
+    <div class="qp-client-grid">
+      <div class="qcf"><label>Client / Organisation</label><input type="text" id="qp-client" placeholder="Client name"></div>
+      <div class="qcf"><label>Event</label><input type="text" id="qp-event" placeholder="Event title"></div>
+      <div class="qcf"><label>Date</label><input type="text" id="qp-edate" placeholder="Event date"></div>
+      <div class="qcf"><label>Venue</label><input type="text" id="qp-venue" placeholder="Venue"></div>
+    </div>
+
+    <table class="qp-items-table">
+      <thead>
+        <tr><th>#</th><th>Description</th><th>Qty</th><th>Rate (UGX)</th><th>Amount (UGX)</th></tr>
+      </thead>
+      <tbody id="qp-items"></tbody>
+    </table>
+
+    <div class="qp-totals">
+      <div class="qt-row"><span>Equipment subtotal</span><span id="qt-equip">0</span></div>
+      <div class="qt-row"><span>Delivery costs</span><span id="qt-delivery">0</span></div>
+      <div class="qt-row"><span>Contingency</span><span id="qt-cont">0</span></div>
+      <div class="qt-row qt-total"><span>TOTAL PAYABLE</span><span id="qt-total">0</span></div>
+    </div>
+
+    <div class="qp-footer">
+      <strong>Payment terms:</strong> 70% deposit to confirm booking; 30% balance before event start.<br>
+      <strong>Validity:</strong> This quotation is valid for 14 days from the date above.<br>
+      <strong>Exclusions:</strong> Stage, truss, LED screen, venue power, permits — unless stated above.<br>
+      <strong>Client responsibilities:</strong> Provide safe power, venue access, and a confirmed event schedule.
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="btn-print" onclick="copyQuoteText()">📋 Copy as Text</button>
+    </div>
+  </div>
+
+  <!-- ── Recent Quotes ── -->
+  <div class="sec-title" style="margin-top:40px;">📬 Recent Enquiries</div>
+  {% if recent_quotes %}
+  <table class="quotes-table">
+    <thead>
+      <tr>
+        <th>#</th><th>Client</th><th>Phone</th><th>Event</th>
+        <th>Date</th><th>Packages</th><th>Total</th><th>Status</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in recent_quotes %}
+      <tr>
+        <td style="color:#555;">{{ q.pk }}</td>
+        <td style="color:#fff;font-weight:600;">{{ q.client_name }}</td>
+        <td><a href="https://wa.me/{{ q.client_phone|cut:'+' }}" style="color:#25D366;text-decoration:none;" target="_blank">{{ q.client_phone }}</a></td>
+        <td>{{ q.event_type }}</td>
+        <td style="color:#888;">{% if q.event_date %}{{ q.event_date }}{% else %}—{% endif %}</td>
+        <td style="font-size:.75rem;color:#888;">
+          {% if q.sound_package %}🔊 {{ q.sound_package.name }}{% endif %}
+          {% if q.lighting_package %}<br>💡 {{ q.lighting_package.name }}{% endif %}
+          {% if not q.sound_package and not q.lighting_package %}—{% endif %}
+        </td>
+        <td style="color:var(--gold);font-weight:600;">
+          {% if q.total_price %}UGX {{ q.total_price|intcomma }}{% else %}—{% endif %}
+        </td>
+        <td>
+          <span class="status-badge s-{{ q.status }}">{{ q.status }}</span>
+        </td>
+        <td><a href="/admin/catalogue/quote/{{ q.pk }}/change/" style="color:#666;font-size:.75rem;">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:#555;padding:20px 0;text-align:center;">No enquiries yet — they'll appear here when clients submit the quote form.</p>
+  {% endif %}
+
+</div>
+
+<script>
+// ── Calculator logic ──────────────────────────────────────────────
+function fmt(n){ return 'UGX ' + Math.round(n).toLocaleString(); }
+function fmtN(n){ return Math.round(n).toLocaleString(); }
+
+function recalc(){
+  const days = parseInt(document.getElementById('eventDays').value) || 1;
+
+  // Equipment subtotal
+  let equipTotal = 0;
+  document.querySelectorAll('#equipRows tr[data-rate]').forEach(row => {
+    const rate = parseInt(row.dataset.rate);
+    const qty  = parseInt(row.querySelector('.qty-input').value) || 0;
+    const line = rate * qty * days;
+    row.querySelector('.line-total').textContent = line ? fmtN(line) : '0';
+    equipTotal += line;
+  });
+
+  // Delivery costs
+  let deliveryTotal = 0;
+  document.querySelectorAll('.cost-input').forEach(el => {
+    deliveryTotal += parseInt(el.value) || 0;
+  });
+
+  const contingencyPct = (parseInt(document.getElementById('contingencyPct').value) || 0) / 100;
+  const contingency    = (equipTotal + deliveryTotal) * contingencyPct;
+  const costToDeliver  = equipTotal + deliveryTotal + contingency;
+
+  const margin    = (parseInt(document.getElementById('marginSlider').value) || 50) / 100;
+  const price     = costToDeliver / (1 - margin);
+  const rounded   = Math.ceil(price / 50000) * 50000;
+
+  document.getElementById('r-equip').textContent       = fmt(equipTotal);
+  document.getElementById('r-delivery').textContent    = fmt(deliveryTotal);
+  document.getElementById('r-contingency').textContent = fmt(contingency);
+  document.getElementById('r-cost').textContent        = fmt(costToDeliver);
+  document.getElementById('r-price').textContent       = fmt(rounded);
+  document.getElementById('r-rounded').textContent     = rounded !== Math.round(price) ? `Rounded up from ${fmt(price)}` : '';
+  document.getElementById('marginLabel').textContent   = document.getElementById('marginSlider').value + '%';
+}
+
+document.querySelectorAll('.qty-input, .cost-input').forEach(el => el.addEventListener('input', recalc));
+document.getElementById('marginSlider').addEventListener('input', recalc);
+document.getElementById('contingencyPct').addEventListener('input', recalc);
+document.getElementById('eventDays').addEventListener('input', recalc);
+recalc();
+
+// ── Generate quotation ──────────────────────────────────────────
+function generateQuote(){
+  const preview = document.getElementById('quotePreview');
+  preview.classList.add('visible');
+
+  // Fill client fields from event fields
+  document.getElementById('qp-client').value = document.getElementById('clientName').value;
+  document.getElementById('qp-event').value  = document.getElementById('eventTitle').value;
+  document.getElementById('qp-edate').value  = document.getElementById('eventDate').value;
+  document.getElementById('qp-venue').value  = document.getElementById('eventVenue').value;
+
+  const refNo = 'TML-' + String(Date.now()).slice(-6);
+  document.getElementById('qp-refno').textContent = refNo;
+  document.getElementById('qp-date').textContent  = new Date().toLocaleDateString('en-UG', {day:'numeric',month:'long',year:'numeric'});
+
+  const days = parseInt(document.getElementById('eventDays').value) || 1;
+  const tbody = document.getElementById('qp-items');
+  tbody.innerHTML = '';
+  let idx = 1; let equipTotal = 0;
+
+  const labels = [
+    'L12 line-array cabinet','12-inch speaker','Double-18-inch subwoofer',
+    'Single-18-inch subwoofer','Behringer X32 console','Amplifier rack',
+    'Wireless microphone','380W moving head','295W moving head',
+    'UV 6-in-1 PAR','RGBW PAR can','Blinder light','COB light',
+    'Avolites controller','Generator (15–20 KVA)','PDU'
+  ];
+  document.querySelectorAll('#equipRows tr[data-rate]').forEach((row, i) => {
+    const qty = parseInt(row.querySelector('.qty-input').value) || 0;
+    if(!qty) return;
+    const rate = parseInt(row.dataset.rate);
+    const line = rate * qty * days;
+    equipTotal += line;
+    tbody.innerHTML += `<tr><td>${idx++}</td><td>${labels[i]}</td><td>${qty}</td><td>${fmtN(rate)}</td><td>${fmtN(line)}</td></tr>`;
+  });
+
+  // Delivery costs
+  const deliveryNames = ['Sound engineer','Lighting operator','Technicians/loaders','Transport/fuel','Consumables','Subcontracted equipment','Other'];
+  const deliveryCosts = ['costEngineer','costLighting','costTech','costTransport','costConsumables','costSub','costOther'];
+  let deliveryTotal = 0;
+  deliveryCosts.forEach((id, i) => {
+    const val = parseInt(document.getElementById(id).value) || 0;
+    if(!val) return;
+    deliveryTotal += val;
+    tbody.innerHTML += `<tr><td>${idx++}</td><td>${deliveryNames[i]}</td><td>1</td><td>${fmtN(val)}</td><td>${fmtN(val)}</td></tr>`;
+  });
+
+  const contingencyPct = (parseInt(document.getElementById('contingencyPct').value) || 0) / 100;
+  const contingency    = (equipTotal + deliveryTotal) * contingencyPct;
+  const margin         = (parseInt(document.getElementById('marginSlider').value) || 50) / 100;
+  const price          = (equipTotal + deliveryTotal + contingency) / (1 - margin);
+  const rounded        = Math.ceil(price / 50000) * 50000;
+
+  document.getElementById('qt-equip').textContent    = fmtN(equipTotal);
+  document.getElementById('qt-delivery').textContent = fmtN(deliveryTotal);
+  document.getElementById('qt-cont').textContent     = fmtN(contingency);
+  document.getElementById('qt-total').textContent    = fmtN(rounded);
+
+  preview.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copyQuoteText(){
+  const client = document.getElementById('qp-client').value || '[Client]';
+  const event  = document.getElementById('qp-event').value  || '[Event]';
+  const total  = document.getElementById('qt-total').textContent;
+  const date   = document.getElementById('qp-date').textContent;
+  const ref    = document.getElementById('qp-refno').textContent;
+  const text   = `*TM LIVE — QUOTATION ${ref}*\nDate: ${date}\nClient: ${client}\nEvent: ${event}\n\nTOTAL PAYABLE: UGX ${total}\n\nPayment: 70% deposit to confirm, 30% before event.\nValid 14 days.\n\nThank you for choosing TM Live 🎵`;
+  navigator.clipboard.writeText(text).then(()=>alert('Copied! Paste into WhatsApp or email.'));
+}
+</script>
+{% endblock %}

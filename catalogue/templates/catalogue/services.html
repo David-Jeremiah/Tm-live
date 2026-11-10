@@ -108,8 +108,8 @@
 {% block content %}
 <div class="svc-hero">
   <div class="badge">What We Offer</div>
-  <h1>Professional Sound Services</h1>
-  <p>From intimate gatherings to full concert productions — we've got you covered.</p>
+  <h1>{{ s.services_page_title }}</h1>
+  {% if s.services_page_subtitle %}<p>{{ s.services_page_subtitle }}</p>{% endif %}
 </div>
 
 <div class="svc-grid">
@@ -129,7 +129,7 @@
 <div class="gallery-section">
   <div class="gallery-section-head">
     <div class="badge">Our Work</div>
-    <h2>Events We've Powered</h2>
+    <h2>{{ s.services_gallery_title }}</h2>
   </div>
 
   {% if gallery_images %}

@@ -67,6 +67,80 @@ class SiteSettings(models.Model):
         help_text="Supports line breaks. Use **bold** for emphasis."
     )
 
+    # Hero CTA buttons
+    hero_btn1_label = models.CharField(max_length=60, default="📞 Book Us Now",
+                                       help_text="Label for the primary hero button")
+    hero_btn2_label = models.CharField(max_length=60, default="💬 WhatsApp",
+                                       help_text="Label for the secondary hero button")
+
+    # Home — Contact form section
+    contact_section_title = models.CharField(max_length=100, default="Contact Us 🙏",
+                                             help_text="Heading above the contact form on the home page")
+    contact_section_eyebrow = models.CharField(max_length=80, default="Get In Touch",
+                                               help_text="Small label above the contact form heading")
+    contact_name_placeholder   = models.CharField(max_length=100, default="e.g. John Mukasa")
+    contact_phone_placeholder  = models.CharField(max_length=100, default="e.g. +256 700 000 000")
+    contact_msg_placeholder    = models.TextField(
+        default="Tell us about your event — location, expected guests, any special requirements...",
+        help_text="Placeholder text inside the message box")
+    contact_event_types        = models.TextField(
+        default=(
+            "Worship Session\nChurch / Fellowship\nBreak Camp / Retreat\nWedding\n"
+            "Introduction Ceremony\nCorporate Event\nConference / Seminar\nSchool Event\n"
+            "Community Gathering\nPrivate Celebration\nLive Band Event\nOutdoor Gathering\n"
+            "Graduation Party\nBirthday Party\nOther"
+        ),
+        help_text="One event type per line — these appear in the event type dropdown")
+    contact_btn_wa    = models.CharField(max_length=80, default="💬 Send via WhatsApp")
+    contact_btn_email = models.CharField(max_length=80, default="✉️ Send via Email")
+
+    # Website & social links
+    website_url     = models.URLField(default="https://tmliveug.netlify.app/", blank=True,
+                                      help_text="Your public website URL (used in QR code and vCard)")
+    facebook_url    = models.URLField(blank=True, help_text="Facebook page URL")
+    instagram_url   = models.URLField(blank=True, help_text="Instagram profile URL")
+    tiktok_url      = models.URLField(blank=True, help_text="TikTok profile URL")
+
+    # About page
+    about_hero_title = models.CharField(max_length=200,
+        default="Professional Sound. Honouring Your Faith. Glorifying Christ.",
+        help_text="Main heading on the About page.")
+    about_intro = models.TextField(
+        default=(
+            "At TM Live, we deliver professional sound solutions with excellence, integrity, and "
+            "unwavering attention to detail. Whether serving churches, weddings, conferences, or "
+            "corporate events, we carry the responsibility for the sound so you can be fully present "
+            "for the moments that matter — your message, your guests, and your purpose."
+        ),
+        blank=True, help_text="Intro paragraph on the About page.")
+    about_story = models.TextField(
+        default=(
+            "TM Live doubles as both a PA system service and live sound provider. Our band performs "
+            "both corporate and wedding music, raising the bar for Christian music with quality. "
+            "With a deep-seated passion for music perfection, TM Live is a Christian themed live "
+            "sound and PA company — delivering that vibe that Christian music gives by honouring "
+            "both your faith and Christ."
+        ),
+        blank=True, help_text="'Our Story' section on the About page.")
+    about_value1_title = models.CharField(max_length=80, default="Faith-Rooted", blank=True)
+    about_value1_text  = models.CharField(max_length=200,
+        default="Everything we do is grounded in Christian values and a heart to serve.", blank=True)
+    about_value2_title = models.CharField(max_length=80, default="Excellence", blank=True)
+    about_value2_text  = models.CharField(max_length=200,
+        default="We hold every event to the highest standard of audio quality and professionalism.", blank=True)
+    about_value3_title = models.CharField(max_length=80, default="Integrity", blank=True)
+    about_value3_text  = models.CharField(max_length=200,
+        default="Honest pricing, reliable service, no surprises.", blank=True)
+
+    # Services page
+    services_page_title   = models.CharField(max_length=120, default="Professional Sound Services",
+                                             help_text="Heading on the Services page")
+    services_page_subtitle = models.CharField(max_length=200,
+        default="From intimate gatherings to full concert productions — we've got you covered.",
+        blank=True, help_text="Subtitle below the Services page heading")
+    services_gallery_title = models.CharField(max_length=120, default="Events We've Powered",
+                                              blank=True, help_text="Gallery section heading on Services page")
+
     # Footer
     footer_note   = models.CharField(max_length=300,
                                      default="© 2025 TM Live · Live Sound & PA · Uganda",

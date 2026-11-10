@@ -75,7 +75,7 @@
 <!-- Hero -->
 <div class="about-hero">
   <div class="about-badge">About TM Live</div>
-  <h1>Professional Sound.<br><span>Honouring Your Faith.</span></h1>
+  <h1>{{ s.about_hero_title }}</h1>
   <p>{{ s.tagline }}</p>
 </div>
 
@@ -88,12 +88,10 @@
   </div>
   <div class="vision-card">
     <div class="vc-label">Who We Are</div>
-    <h2>TM Live Sound & PA</h2>
-    <p>TM Live is a trusted PA System and Live Sound Provider Company based in Uganda, committed to delivering exceptional audio experiences with Professionalism, Integrity, and Excellence.
+    <h2>{{ s.site_name }} Sound & PA</h2>
+    <p style="white-space:pre-line;">{{ s.about_intro }}{% if s.about_story %}
 
-Whether you're hosting a celebration, a corporate gathering, a church event, or a community function — we provide reliable sound solutions tailored to your event's needs.
-
-Our foundation is rooted in Christian values, guiding us to serve every client with honesty, respect, and a commitment to excellence. 🎶</p>
+{{ s.about_story }}{% endif %}</p>
   </div>
 </div>
 
@@ -101,18 +99,18 @@ Our foundation is rooted in Christian values, guiding us to serve every client w
 <div class="values-row">
   <div class="value-pill">
     <div class="icon">✝</div>
-    <h3>Faith-Rooted</h3>
-    <p>Christian values guide every booking, every event, every interaction.</p>
+    <h3>{{ s.about_value1_title }}</h3>
+    <p>{{ s.about_value1_text }}</p>
   </div>
   <div class="value-pill">
     <div class="icon">🎛️</div>
-    <h3>Excellence</h3>
-    <p>Professional-grade equipment operated by experienced sound engineers.</p>
+    <h3>{{ s.about_value2_title }}</h3>
+    <p>{{ s.about_value2_text }}</p>
   </div>
   <div class="value-pill">
     <div class="icon">🤝</div>
-    <h3>Integrity</h3>
-    <p>Transparent pricing, honest advice, and reliability you can count on.</p>
+    <h3>{{ s.about_value3_title }}</h3>
+    <p>{{ s.about_value3_text }}</p>
   </div>
 </div>
 

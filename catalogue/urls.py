@@ -13,4 +13,5 @@ urlpatterns = [
     path('package/<str:package_type>/<int:pk>/', views.package_detail, name='package_detail'),
     path('quote/', views.request_quote, name='request_quote'),
     path('corporate/', views.corporate, name='corporate'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]

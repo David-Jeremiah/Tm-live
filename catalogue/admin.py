@@ -18,19 +18,45 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     fieldsets = (
         ('🎨 Branding', {
             'fields': ('site_name', 'tagline', 'logo'),
-            'description': 'Logo and site name shown across the site.',
+            'description': 'Logo and site name shown across the whole site.',
         }),
         ('🖼️ Hero Section', {
-            'fields': ('hero_image', 'hero_verse', 'hero_line1', 'hero_line2', 'hero_line3', 'hero_line4'),
-            'description': 'Hero background image and the four cycling headline words.',
+            'fields': ('hero_image', 'hero_verse', 'hero_line1', 'hero_line2', 'hero_line3', 'hero_line4', 'hero_btn1_label', 'hero_btn2_label'),
+            'description': 'Hero background image, the four cycling headline words, and button labels.',
         }),
         ('📞 Contact Details', {
             'fields': ('phone_calls', 'phone_wa1', 'phone_wa2', 'email', 'location'),
             'description': 'Shown in the contact strip and footer.',
         }),
-        ('📖 Vision / About Section', {
+        ('📋 Contact Form (Home Page)', {
+            'fields': ('contact_section_eyebrow', 'contact_section_title',
+                       'contact_name_placeholder', 'contact_phone_placeholder',
+                       'contact_msg_placeholder', 'contact_event_types',
+                       'contact_btn_wa', 'contact_btn_email'),
+            'description': 'Every word on the contact form at the bottom of the home page.',
+            'classes': ('collapse',),
+        }),
+        ('🌐 Website & Social Links', {
+            'fields': ('website_url', 'facebook_url', 'instagram_url', 'tiktok_url'),
+            'description': 'Used in the QR code, vCard and social buttons.',
+            'classes': ('collapse',),
+        }),
+        ('📖 Vision / About Section (Home)', {
             'fields': ('vision_title', 'vision_body'),
             'description': 'The "Our Vision" section on the homepage.',
+        }),
+        ('📄 About Page', {
+            'fields': ('about_hero_title', 'about_intro', 'about_story',
+                       'about_value1_title', 'about_value1_text',
+                       'about_value2_title', 'about_value2_text',
+                       'about_value3_title', 'about_value3_text'),
+            'description': 'All text on the About Us page.',
+            'classes': ('collapse',),
+        }),
+        ('🎵 Services Page', {
+            'fields': ('services_page_title', 'services_page_subtitle', 'services_gallery_title'),
+            'description': 'Headings on the Services page.',
+            'classes': ('collapse',),
         }),
         ('🔻 Footer', {
             'fields': ('footer_note',),

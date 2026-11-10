@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 import os
 
 from .models import (
@@ -54,13 +56,10 @@ def _build_gallery(settings_obj=None):
 
 def home(request):
     s = SiteSettings.get()
-    services = ServiceCard.objects.filter(is_active=True)
-    gallery_cats = _build_gallery()
-
+    event_types = [e.strip() for e in s.contact_event_types.splitlines() if e.strip()]
     return render(request, 'catalogue/home.html', {
         's': s,
-        'services': services,
-        'gallery_cats': gallery_cats,
+        'event_types': event_types,
     })
 
 
@@ -230,6 +229,35 @@ def services(request):
         's': s,
         'service_list': service_list,
         'gallery_images': gallery_images,
+    })
+
+
+@login_required(login_url='/admin/login/')
+def dashboard(request):
+    s = SiteSettings.get()
+    now = timezone.now()
+    month_start = now.date().replace(day=1)
+    qs = Quote.objects.all()
+    total_quotes    = qs.count()
+    accepted_quotes = qs.filter(status='accepted').count()
+    pending_quotes  = qs.filter(status__in=['draft', 'sent']).count()
+    month_quotes    = qs.filter(created_at__date__gte=month_start).count()
+    total_revenue   = sum(
+        q.total_price() for q in qs.filter(status='accepted') if q.total_price()
+    )
+    recent_quotes   = qs.order_by('-created_at')[:20]
+    sound_count     = SoundPackage.objects.filter(is_active=True).count()
+    lighting_count  = LightingPackage.objects.filter(is_active=True).count()
+    return render(request, 'catalogue/dashboard.html', {
+        's': s,
+        'total_quotes': total_quotes,
+        'accepted_quotes': accepted_quotes,
+        'pending_quotes': pending_quotes,
+        'month_quotes': month_quotes,
+        'total_revenue': total_revenue,
+        'recent_quotes': recent_quotes,
+        'sound_count': sound_count,
+        'lighting_count': lighting_count,
     })
 
 
